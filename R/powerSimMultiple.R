@@ -1,4 +1,4 @@
-#' Estimate power by simulation.
+#' Estimate power by simulation for multiple effects simultaneously.
 #'
 #' Perform a power analysis for a mixed model.
 #'
@@ -15,17 +15,17 @@
 #'   \item{\code{nsim}:}{the number of simulations to run (default is \code{1000}).}
 #'   \item{\code{alpha}:}{the significance level for the statistical test (default is \code{0.05}).}
 #'   \item{\code{progress}:}{use progress bars during calculations (default is \code{TRUE}).}
-#'   }
+#'   }#'
 #' @examples
 #' fm1 <- lmer(y ~ x + (1|g), data=simdata)
 #' powerSim(fm1, nsim=10)
 #'
-#' @seealso \code{\link{print.powerSim}}, \code{\link{summary.powerSim}}, \code{\link{confint.powerSim}}
 #' @export
-powerSim <- function(
+powerSimMultiple <- function(
 
     fit,
-    test = fixed(getDefaultXname(fit)),
+    test = fixed,
+    xvars = getAllXnames(fit,exclude=c("(Intercept)"), pred.type="anova"),
     sim = fit,
 
     fitOpts = list(),
@@ -36,7 +36,7 @@ powerSim <- function(
 
     ...
 
-    ) {
+) {
 
     opts <- simrOptions(...)
     on.exit(simrOptions(opts))
@@ -54,7 +54,7 @@ powerSim <- function(
     # summarise the fitted models
     # I'm not sure this call to wrapTest is necessary since doTest also calls wrapTest?
     # Ahh, because you need the text attribute later ...
-    test <- wrapTest(test)
+    test <- sapply(xvars, function(xv) wrapTest(test(xv)) )
     #p <- maybe_laply(z, test, .text="Testing")
 
     f <- function() {
@@ -70,12 +70,14 @@ powerSim <- function(
         tag(z <- do.call(doFit, c(list(y, fit), fitOpts)), tag="Fitting")
 
         # doTest(fit, test, [opts])
-        tag(pval <- do.call(doTest, c(list(z, test), testOpts)), tag="Testing")
+        aply.fnc <- function(xv) do.call(doTest, c(list(z, test[[xv]], testOpts)))
+        tag(pval <- sapply(xvars,aply.fnc), tag="Testing")
 
         return(pval)
     }
 
-    p <- maybe_raply(nsim, f(), .text="Simulating")
+    p <- maybe_rlply(nsim, f(), .text="Simulating")
+    p$value <- as.data.frame(do.call(rbind,p$value))
 
     # END TIMING
     timing <- proc.time() - start
@@ -83,15 +85,13 @@ powerSim <- function(
     # structure the return value
     rval <- list()
 
-    rval $ x <- sum(p$value < alpha, na.rm=TRUE)
+    rval $ x <- lapply(p$value,function(x) sum(x < alpha,na.rm=TRUE))
     rval $ n <- nsim
 
-    #rval $ xname <- xname
+    rval $ xnames <- xvars
     #rval $ effect <- fixef(sim)[xname] # can't guarantee this is available?
-
-    rval $ text <- attr(test, "text")(fit, sim)
-    rval $ description <- attr(test, "description")(fit, sim)
-
+    rval $ text <- sapply(xvars, function(xv) attr(test[[xv]], "text")(fit, sim) )
+    rval $ description <- sapply(xvars, function(xv) attr(test[[xv]], "description")(fit, sim) )
     rval $ pval <- p$value
 
     rval $ alpha <- alpha
@@ -103,12 +103,9 @@ powerSim <- function(
     rval $ timing <- timing
     rval $ simrTag <- observedPowerWarning(sim)
 
-    class(rval) <- "powerSim"
+    class(rval) <- "powerSimList"
 
     .simrLastResult $ lastResult <- rval
 
     return(rval)
 }
-
-#' @export
-plot.powerSim <- function(x, ...) stop("Not yet implemented.")
