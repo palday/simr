@@ -54,7 +54,7 @@ powerSimMultiple <- function(
     # summarise the fitted models
     # I'm not sure this call to wrapTest is necessary since doTest also calls wrapTest?
     # Ahh, because you need the text attribute later ...
-    test <- sapply(xvars, function(xv) wrapTest(test(xv)) )
+    test <- sapply(xvars, function(xv) wrapTest(test(xv)) , simplify = FALSE  )
     #p <- maybe_laply(z, test, .text="Testing")
 
     f <- function() {
@@ -79,7 +79,7 @@ powerSimMultiple <- function(
         # potentially quite memory-intensive memoisation feature to doTest()
         # (and which would have to include all the package, test, and simulation options!)
         aply.fnc <- function(xv) do.call(doTest, c(list(z, test[[xv]], testOpts)))
-        tag(pval <- sapply(xvars,aply.fnc), tag="Testing")
+        tag(pval <- sapply(xvars,aply.fnc,simplify = FALSE), tag="Testing")
 
         return(pval)
     }
@@ -93,13 +93,13 @@ powerSimMultiple <- function(
     # structure the return value
     rval <- list()
 
-    rval $ x <- lapply(p$value,function(x) sum(x < alpha,na.rm=TRUE))
+    rval $ x <- sapply(p$value,function(x) sum(x < alpha,na.rm=TRUE) , simplify = FALSE )
     rval $ n <- nsim
 
     rval $ xnames <- xvars
     #rval $ effect <- fixef(sim)[xname] # can't guarantee this is available?
-    rval $ text <- sapply(xvars, function(xv) attr(test[[xv]], "text")(fit, sim) )
-    rval $ description <- sapply(xvars, function(xv) attr(test[[xv]], "description")(fit, sim) )
+    rval $ text <- sapply(xvars, function(xv) attr(test[[xv]], "text")(fit, sim) , simplify = FALSE )
+    rval $ description <- sapply(xvars, function(xv) attr(test[[xv]], "description")(fit, sim) , simplify = FALSE )
     rval $ pval <- p$value
 
     rval $ alpha <- alpha
