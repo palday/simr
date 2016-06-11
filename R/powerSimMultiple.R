@@ -1,6 +1,6 @@
 #' Estimate power by simulation for multiple effects simultaneously.
 #'
-#' Perform a power analysis for a mixed model.
+#' Perform a power analysis for a mixed model, testing multiple predictors simultaneously.
 #'
 #' @param fit a fitted model object (see \code{\link{doFit}}).
 #' @param test specify the test to perform. By default, the first fixed effect in \code{fit} will be tested.
@@ -15,7 +15,7 @@
 #'   \item{\code{nsim}:}{the number of simulations to run (default is \code{1000}).}
 #'   \item{\code{alpha}:}{the significance level for the statistical test (default is \code{0.05}).}
 #'   \item{\code{progress}:}{use progress bars during calculations (default is \code{TRUE}).}
-#'   }#'
+#'   }
 #' @examples
 #' fm1 <- lmer(y ~ x + (1|g), data=simdata)
 #' powerSim(fm1, nsim=10)

@@ -29,10 +29,10 @@ powerSimMultiple(fit, test = fixed, xvars = getAllXnames(fit, exclude =
   \item{\code{nsim}:}{the number of simulations to run (default is \code{1000}).}
   \item{\code{alpha}:}{the significance level for the statistical test (default is \code{0.05}).}
   \item{\code{progress}:}{use progress bars during calculations (default is \code{TRUE}).}
-  }#'}
+  }}
 }
 \description{
-Perform a power analysis for a mixed model.
+Perform a power analysis for a mixed model, testing multiple predictors simultaneously.
 }
 \examples{
 fm1 <- lmer(y ~ x + (1|g), data=simdata)

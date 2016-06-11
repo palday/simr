@@ -3,17 +3,25 @@
 \name{print.powerSim}
 \alias{confint.powerCurve}
 \alias{confint.powerSim}
+\alias{confint.powerSimList}
 \alias{print.powerCurve}
 \alias{print.powerSim}
+\alias{print.powerSimList}
 \alias{summary.powerCurve}
 \alias{summary.powerSim}
+\alias{summary.powerSimList}
 \title{Report simulation results}
 \usage{
 \method{print}{powerSim}(x, alpha = x$alpha, level = 0.95, ...)
 
+\method{print}{powerSimList}(x, alpha = x$alpha, level = 0.95, ...)
+
 \method{print}{powerCurve}(x, ...)
 
 \method{summary}{powerSim}(object, alpha = object$alpha, level = 0.95,
+  method = getSimrOption("binom"), ...)
+
+\method{summary}{powerSimList}(object, alpha = object$alpha, level = 0.95,
   method = getSimrOption("binom"), ...)
 
 \method{summary}{powerCurve}(object, alpha = object$alpha, level = 0.95,
@@ -22,11 +30,14 @@
 \method{confint}{powerSim}(object, parm, level = 0.95,
   method = getSimrOption("binom"), alpha = object$alpha, ...)
 
+\method{confint}{powerSimList}(object, parm, level = 0.95,
+  method = getSimrOption("binom"), alpha = object$alpha, ...)
+
 \method{confint}{powerCurve}(object, parm, level = 0.95,
   method = getSimrOption("binom"), ...)
 }
 \arguments{
-\item{x}{a \code{\link{powerSim}} or \code{\link{powerCurve}} object}
+\item{x}{a \code{\link{powerSim}}, \code{\link[=powerSimMultiple]{powerSimList}} or \code{\link{powerCurve}} object}
 
 \item{alpha}{the significance level for the statistical test (default is that used in the call to \code{powerSim}).}
 
@@ -40,7 +51,7 @@
   evidence and determines the width/coverage of the confidence interval for
   power.}
 
-\item{object}{a \code{\link{powerSim}} or \code{\link{powerCurve}} object}
+\item{object}{a \code{\link{powerSim}}, \code{\link[=powerSimMultiple]{powerSimList}} or \code{\link{powerCurve}} object}
 
 \item{method}{method to use for computing binomial confidence intervals (see \code{\link[=binom.confint]{binom::binom.confint()}})}
 
@@ -50,6 +61,6 @@
 Describe and extract power simulation results
 }
 \seealso{
-\code{\link[=binom.confint]{binom::binom.confint}}, \code{\link{powerSim}}, \code{\link{powerCurve}}
+\code{\link[=binom.confint]{binom::binom.confint}}, \code{\link{powerSim}}, \code{\link[=powerSimMultiple]{powerSimList}}, \code{\link{powerCurve}}
 }
 

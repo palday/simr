@@ -7,8 +7,8 @@
 #'
 #' Describe and extract power simulation results
 #'
-#' @param x a \code{\link{powerSim}} or \code{\link{powerCurve}} object
-#' @param object a \code{\link{powerSim}} or \code{\link{powerCurve}} object
+#' @param x a \code{\link{powerSim}}, \code{\link[=powerSimMultiple]{powerSimList}} or \code{\link{powerCurve}} object
+#' @param object a \code{\link{powerSim}}, \code{\link[=powerSimMultiple]{powerSimList}} or \code{\link{powerCurve}} object
 #' @param parm currently ignored, included for S3 compatibility with \code{\link[=confint]{stats::confint}}
 #' @param alpha the significance level for the statistical test (default is that used in the call to \code{powerSim}).
 #' @param level confidence level for power estimate
@@ -20,7 +20,7 @@
 #'   \code{level} is the confidendence level that is calculated for this point
 #'   evidence and determines the width/coverage of the confidence interval for
 #'   power.
-#' @seealso  \code{\link[=binom.confint]{binom::binom.confint}}, \code{\link{powerSim}}, \code{\link{powerCurve}}
+#' @seealso  \code{\link[=binom.confint]{binom::binom.confint}}, \code{\link{powerSim}}, \code{\link[=powerSimMultiple]{powerSimList}}, \code{\link{powerCurve}}
 #' @export
 print.powerSim <- function(x, alpha=x$alpha, level=0.95, ...) {
 
@@ -38,6 +38,47 @@ print.powerSim <- function(x, alpha=x$alpha, level=0.95, ...) {
     cat("\n")
 
     #cat(sprintf("Based on %i simulations and effect size %.2f", z$n, z$effect))
+    cat(sprintf("Based on %i simulations, ", x$n))
+    wn <- length(unique(x$warnings$index)) ; en <- length(unique(x$errors$index))
+    wstr <- str_c(wn, " ", if(wn==1) "warning" else "warnings")
+    estr <- str_c(en, " ", if(en==1) "error" else "errors")
+    cat(str_c("(", wstr, ", ", estr, ")"))
+    cat("\n")
+
+    cat("alpha = ", alpha, ", nrow = ", x$nrow, sep="")
+    cat("\n")
+
+    time <- x$timing['elapsed']
+    cat(sprintf("\nTime elapsed: %i h %i m %i s\n", floor(time/60/60), floor(time/60) %% 60, floor(time) %% 60))
+
+    if(x$simrTag) cat("\nnb: result might be an observed power calculation\n")
+}
+
+#' @rdname print.powerSim
+#' @export
+print.powerSimList <- function(x, alpha=x$alpha, level=0.95, ...) {
+    s <- summary(x, alpha=alpha, level=level, ...)
+    ci <- s[,c("mean","lower","upper")]
+
+    for(xv in x$xnames){
+        cat("* ")
+        cat(x$text[[xv]])
+        cat(paste0(", (",level*100,"% confidence interval):\n      "))
+        # This doesn't do the NA checks that printerval does, but it should
+        # still display NAs because those just percolate through in calculations,
+        # same goes for errors -- garbage in, garbage out and all that
+        ci.xv <- sapply(ci[xv,],as.numeric) # convert to a numeric array
+        cat(as.percentage(ci.xv))
+        cat("\n\n")
+
+        pad <- "  Test: "
+        for(text in x$description[[xv]]) {
+            cat(pad); pad <- "      "
+            cat(text)
+            cat("\n")
+        }
+        cat("\n")
+    }
     cat(sprintf("Based on %i simulations, ", x$n))
     wn <- length(unique(x$warnings$index)) ; en <- length(unique(x$errors$index))
     wstr <- str_c(wn, " ", if(wn==1) "warning" else "warnings")
@@ -91,6 +132,7 @@ summary.powerSim <- function(object, alpha=object$alpha, level=0.95, method=getS
     return(rval)
 }
 
+#' @rdname print.powerSim
 #' @export
 summary.powerSimList <- function(object, alpha=object$alpha, level=0.95, method=getSimrOption("binom"), ...) {
 
@@ -136,7 +178,7 @@ confint.powerSim <- function(object, parm, level=0.95, method=getSimrOption("bin
     return(rval)
 }
 
-# summary and confint for powerSimList
+#' @rdname print.powerSim
 #' @export
 confint.powerSimList <- function(object, parm, level=0.95, method=getSimrOption("binom"), alpha=object$alpha, ...) {
 
