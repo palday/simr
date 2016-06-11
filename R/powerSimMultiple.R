@@ -70,6 +70,14 @@ powerSimMultiple <- function(
         tag(z <- do.call(doFit, c(list(y, fit), fitOpts)), tag="Fitting")
 
         # doTest(fit, test, [opts])
+        # Note that while this prevent the model for each simulation from being computed multiple times,
+        # the test themselves may still be 'redudant'. For LR-tests, this isn't so much an issue
+        # as each test truly only tests one predictor at a time, but for tests that generate ANOVA
+        # tables, the ANOVA table is being re-generated for each predictor, even though the ANOVA
+        # table already contains tests for all predictors! There doesn't seem to be convenient way of
+        # addressing this redudancy without redoing a lot of the infrastructure and/or adding a
+        # potentially quite memory-intensive memoisation feature to doTest()
+        # (and which would have to include all the package, test, and simulation options!)
         aply.fnc <- function(xv) do.call(doTest, c(list(z, test[[xv]], testOpts)))
         tag(pval <- sapply(xvars,aply.fnc), tag="Testing")
 
