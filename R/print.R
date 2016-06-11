@@ -91,6 +91,23 @@ summary.powerSim <- function(object, alpha=object$alpha, level=0.95, method=getS
     return(rval)
 }
 
+#' @export
+summary.powerSimList <- function(object, alpha=object$alpha, level=0.95, method=getSimrOption("binom"), ...) {
+
+    x <- sapply(object$pval, function(col) sum(col < alpha, na.rm=TRUE))
+    n <- object$n
+
+    power.fnc <- function(x) binom.confint(x, n, conf.level=level, methods=method)[c("mean", "lower", "upper")]
+    power <- sapply(x,power.fnc)
+    # transpose it so that it lines up with the form from summary.powerSim
+    power <- as.data.frame(t(power))
+    rval <- cbind(successes=x, trials=n, power)
+
+    class(rval) <- c("summary.powerSimList", class(rval))
+
+    return(rval)
+}
+
 #' @rdname print.powerSim
 #' @export
 summary.powerCurve <- function(object, alpha=object$alpha, level=0.95, method=getSimrOption("binom"), ...) {
@@ -115,6 +132,29 @@ confint.powerSim <- function(object, parm, level=0.95, method=getSimrOption("bin
     rval <- as.matrix(rval)
     levelNames <- paste(format(100 * c((1-level)/2, 1-(1-level)/2), trim=TRUE, scientific=FALSE, digits=3), "%")
     dimnames(rval) <- list("power", levelNames)
+
+    return(rval)
+}
+
+# summary and confint for powerSimList
+#' @export
+confint.powerSimList <- function(object, parm, level=0.95, method=getSimrOption("binom"), alpha=object$alpha, ...) {
+
+    x <- sapply(object$pval, function(col) sum(col < alpha, na.rm=TRUE))
+    n <- object$n
+
+    rval.fnc <- function(x) binom.confint(x, n, conf.level=level, methods=method, ..)[c("lower", "upper")]
+    rval <- sapply(x,rval.fnc,simplify=FALSE)
+
+    rval <- sapply(rval, as.matrix, simplify = FALSE)
+
+    levelNames <- paste(format(100 * c((1-level)/2, 1-(1-level)/2), trim=TRUE, scientific=FALSE, digits=3), "%")
+    names.fnc <- function(x) {
+        dimnames(x) <- list("power", levelNames)
+        x
+    }
+
+    rval <- sapply(rval, names.fnc, simplify = FALSE)
 
     return(rval)
 }
