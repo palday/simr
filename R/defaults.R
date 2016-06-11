@@ -10,25 +10,41 @@ getDefaultXname <- function(obj) {
     return(a)
 }
 
+#' Extract all fixed-effect model terms
+#'
+#' @param fit a fitted model from \code{\link{lm}}, \code{\link{glm}},
+#'   \code{\link{lmer}},  \code{\link{glmer}}
+#' @param exclude a vector of model terms to exclude, by default the intercept
+#'   term
+#' @param pred.type type of predictor to extract.
+#'
+#' @details
+#'   \code{pred.type} determines whether \code{anova}-type model "terms" are
+#'   extracted or model coefficients (the actual $beta$'s). For numerical
+#'   predictors, there is no difference. For categorical predictors,
+#'   \code{pred.type="anova"} returns a single name per predictor, while
+#'   \code{pred.type="coef"} returns a name for each contrast in the model. i.e.
+#'   with categorical predictors unexpanded. \code{}
+#'
 #' @export
-getAllXnames <- function(obj, exclude=c("(Intercept)"), pred.type=c("anova","coef")) {
-    # default to ANOVA style since the default test is LR, whcih does ANOVA-style names
+getAllXnames <- function(fit, exclude=c("(Intercept)"), pred.type=c("anova","coef")) {
+    # default to ANOVA style since the default test is LR, which does ANOVA-style names
     # also, coef-style has a lot more problems with multiple comparisons for categorical
     # regresssors. For continuous regressors, it doesn't make any difference since the n
     # names are the same either way
     pred.type <- if(missing(pred.type)) "anova" else match.arg(pred.type)
 
     if(pred.type == "coef"){
-        if(inherits(obj,"lm")){
-            n <-  names(coef(obj))
-        }else if(inherits(obj,"merMod")){
-            n <- names(fixef(obj))
+        if(inherits(fit,"lm")){
+            n <-  names(coef(fit))
+        }else if(inherits(fit,"merMod")){
+            n <- names(fixef(fit))
         }else{
             stop("Couldn't automatically determine fixed effect terms for this model.")
         }
     }else{
         # ANOVA-style predictor names
-        n <- attr(terms(obj),"term.labels")
+        n <- attr(terms(fit),"term.labels")
     }
 
     n[!(n %in% exclude)]

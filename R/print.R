@@ -185,8 +185,8 @@ confint.powerSimList <- function(object, parm, level=0.95, method=getSimrOption(
     x <- sapply(object$pval, function(col) sum(col < alpha, na.rm=TRUE))
     n <- object$n
 
-    rval.fnc <- function(x) binom.confint(x, n, conf.level=level, methods=method, ..)[c("lower", "upper")]
-    rval <- sapply(x,rval.fnc,simplify=FALSE)
+    rval.fnc <- function(hits,trials) binom.confint(hits, trials, conf.level=level, methods=method, ...)[c("lower", "upper")]
+    rval <- sapply(x,rval.fnc, trials=n, simplify=FALSE)
 
     rval <- sapply(rval, as.matrix, simplify = FALSE)
 
