@@ -117,3 +117,6 @@ powerSimMultiple <- function(
 
     return(rval)
 }
+
+#' @export
+plot.powerSimList <- function(x, ...) stop("Not yet implemented.")
