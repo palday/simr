@@ -2,9 +2,13 @@
 % Please edit documentation in R/doTest.R
 \name{doTest}
 \alias{doTest}
+\alias{doTest.default}
 \title{Apply a hypothesis test to a fitted model.}
 \usage{
 doTest(object, test, ...)
+
+\method{doTest}{default}(object, test = fixed(getDefaultXname(object)),
+  simultaneous = FALSE, ...)
 }
 \arguments{
 \item{object}{an object to apply a statistcal test to, usually a fitted model.}
@@ -12,6 +16,8 @@ doTest(object, test, ...)
 \item{test}{a test function, see \link{tests}.}
 
 \item{...}{additional options.}
+
+\item{simultaneous}{Use simultaneous tests (\code{FALSE}).}
 }
 \value{
 a p-value with attributes describing the test.

@@ -142,7 +142,17 @@ fixed <- function(xname, method=c("z", "t", "f", "chisq", "anova", "lr", "kr", "
 
     rval <- function(.) test(., xname)
 
-    wrapTest(rval, str_c("for predictor '", removeSquiggle(xname), "'"), description)
+    if(length(xname) == 1){
+        xname_str <- paste0("'",removeSquiggle(xname),"'")
+        pred_str <- "for predictor "
+    }else{
+        xname_str <- sapply(xname,function(x) paste0("'",removeSquiggle(x),"'"),
+                            USE.NAMES = FALSE, simplify = TRUE)
+        xname_str <- paste(xname_str,collapse=", ")
+        pred_str <- "for predictors "
+    }
+
+    wrapTest(rval, str_c(pred_str, xname_str), description)
 }
 
 fixeddesc <- function(text, xname) {
@@ -167,8 +177,15 @@ fixeddesc <- function(text, xname) {
         # effect size
         fe <- maybe(fixef)(sim)$value
         if(!is.null(fe) && xname %in% names(fe)) {
-
-            rval[2] <- sprintf("Effect size for %s is %#.2g", xname, fe[[xname]])
+            if(length(xname) == 1){
+                rval[2] <- sprintf("Effect size for %s is %#.2g", xname, fe[[xname]])
+            }else{
+                # this is rather kldugy, but it allows print.test to handle this
+                # output with minimal change
+                apply.fnc <- function(xn) sprintf("Effect size for %s is %#.2g", xn, fe[[xn]])
+                eff_text <- sapply(xname,apply.fnc,simplify = FALSE,USE.NAMES = TRUE)
+                rval[2] <- paste(eff_text,collapse = "\n      ")
+            }
         }
 
         return(rval)

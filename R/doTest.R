@@ -11,8 +11,10 @@
 #' @export
 doTest <- function(object, test, ...) UseMethod('doTest', object)
 
+#' @param simultaneous Use simultaneous tests (\code{FALSE}).
+#' @rdname doTest
 #' @export
-doTest.default <- function(object, test=fixed(getDefaultXname(object)), ...) {
+doTest.default <- function(object, test=fixed(getDefaultXname(object)), simultaneous=FALSE,...) {
 
     opts <- simrOptions(...)
     on.exit(simrOptions(opts))
@@ -21,11 +23,17 @@ doTest.default <- function(object, test=fixed(getDefaultXname(object)), ...) {
 
     pval <- test(object)
 
-    if(!is.numeric(pval) || length(pval)!= 1 || is.na(pval)) stop("Test did not return a p-value")
+    if(!is.numeric(pval) || is.na(pval)) stop("Test did not return a p-value")
+
+    if(!simultaneous && length(pval)!= 1) stop("Test did not return a p-value")
+
+    if(is.numeric(simultaneous) && length(pval)!= simultaneous) stop("Test did not return enough p-values")
+
+    pval_str <- ifelse(simultaneous,"p-values","p-value")
 
     rval <- structure(pval,
 
-        text = str_c("p-value", substring(attr(test, "text")(object, object), 6)),
+        text = str_c(pval_str,substring(attr(test, "text")(object, object), 6)),
         description = attr(test, "description")(object, object)
     )
 
@@ -37,7 +45,7 @@ doTest.default <- function(object, test=fixed(getDefaultXname(object)), ...) {
 #' @export
 print.test <- function(x, ...) {
 
-    cat(attr(x, "text"), ": ", x, "\n", sep="")
+    cat(attr(x, "text"), ": ", paste(x,collapse=", "), "\n", sep="")
 
     cat("          --------------------\n")
 
