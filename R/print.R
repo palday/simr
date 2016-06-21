@@ -198,7 +198,38 @@ confint.powerSimList <- function(object, parm, level=0.95, method=getSimrOption(
 
     rval <- sapply(rval, names.fnc, simplify = FALSE)
 
+    class(rval) <- c("powerSimListCI","list")
+
     return(rval)
+}
+
+#' @rdname as.data.frame.powerSimListCI
+#' @seealso \code{\link{as.matrix}}
+#' @export
+as.matrix.powerSimListCI <- function(x, ...){
+    rval <- do.call(rbind,x)
+    row.names(rval) <- names(x)
+
+    return(rval)
+}
+
+#' Convenience functions for powerSimList confidence intervals
+#'
+#' Manipulate and wrangle lists of confidence intervals into usable rectangular data formats
+#' @param x a \code{powerSimList} object
+#' @param row.names see \code{\link{as.data.frame}}
+#' @param optional see \code{\link{as.data.frame}}
+#' @param ... included for S3 compatibility
+#'
+#'   This functions are simple convienence wrappers to flatten
+#'   \code{confint.powerSimList} output, which is returned as a list of
+#'   \code{powerSim} confidence intervals, just as if you had used \code{lapply}
+#'   on a list of \code{powerSim} objects.
+#'
+#' @seealso \code{\link{as.data.frame}}
+#' @export
+as.data.frame.powerSimListCI <- function(x, row.names = NULL, optional = FALSE, ...){
+    as.data.frame(as.matrix(x), row.names=row.names, optional=optional,...)
 }
 
 #' @rdname print.powerSim
