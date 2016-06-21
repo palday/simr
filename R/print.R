@@ -145,6 +145,11 @@ summary.powerSimList <- function(object, alpha=object$alpha, level=0.95, method=
     power <- as.data.frame(t(power))
     rval <- cbind(successes=x, trials=n, power)
 
+    # make sure everything is numeric and not a list
+    rval$lower <- as.numeric(rval$lower)
+    rval$upper <- as.numeric(rval$upper)
+    rval$mean <- as.numeric(rval$mean)
+
     class(rval) <- c("summary.powerSimList", class(rval))
 
     return(rval)
