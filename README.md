@@ -14,3 +14,18 @@ This is also currently the citation given by `citation('simr')`, so it's what yo
 [![DOI](https://zenodo.org/badge/60388682.svg)](https://zenodo.org/badge/latestdoi/60388682)
 
 Once this has been intergrated into mainstream simr, double citation will no longer be necessary. 
+
+## Installing and Using the `simultaneous` Branch
+
+```r
+if(!require(devtools)){
+    install.packages("devtools")
+    library("devtools")
+}
+
+install_github("palday/simr",ref="simultaneous")
+library(simr)
+?powerSimSimultaneous
+?powerSimMultiple
+```
+
