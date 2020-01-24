@@ -4,9 +4,17 @@
 \alias{powerSimMultiple}
 \title{Estimate omnibus power for multiple effects by simulation}
 \usage{
-powerSimMultiple(fit, test = fixed, xvars = getAllXnames(fit, exclude =
-  c("(Intercept)"), pred.type = "anova"), sim = fit, fitOpts = list(),
-  testOpts = list(), simOpts = list(), seed, ...)
+powerSimMultiple(
+  fit,
+  test = fixed,
+  xvars = getAllXnames(fit, exclude = c("(Intercept)"), pred.type = "anova"),
+  sim = fit,
+  fitOpts = list(),
+  testOpts = list(),
+  simOpts = list(),
+  seed,
+  ...
+)
 }
 \arguments{
 \item{fit}{a fitted model object (see \code{\link{doFit}}).}
@@ -76,4 +84,3 @@ powerSimMultiple(fm2, function(x) fixed(x,method="t"), getAllXnames(fm2, pred.ty
 \code{\link{powerSim}}, \code{\link{print.powerSimList}},
   \code{\link{confint.powerSimList}}, \code{\link{summary.powerSimList}}
 }
-

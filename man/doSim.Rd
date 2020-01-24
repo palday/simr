@@ -7,7 +7,7 @@
 doSim(object, ...)
 }
 \arguments{
-\item{object}{an object to simulare from, usually a fitted model.}
+\item{object}{an object to simulate from, usually a fitted model.}
 
 \item{...}{additional options.}
 }
@@ -18,4 +18,3 @@ a vector containing simulated response values (or, for models  with a multivaria
 \description{
 This is normally an internal function, but it can be overloaded to extend \code{simr} to other packages.
 }
-

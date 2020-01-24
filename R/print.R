@@ -15,9 +15,9 @@
 #' @param method method to use for computing binomial confidence intervals (see \code{\link[=binom.confint]{binom::binom.confint()}})
 #' @param ... additional arguments to pass to \code{\link[=binom.confint]{binom::binom.confint()}}
 #'
-#'   \code{alpha} refers to the threshold for an effect being signficant and
+#'   \code{alpha} refers to the threshold for an effect being significant and
 #'   thus directly determines the point estimate for the power calculation.
-#'   \code{level} is the confidendence level that is calculated for this point
+#'   \code{level} is the confidence level that is calculated for this point
 #'   evidence and determines the width/coverage of the confidence interval for
 #'   power.
 #' @seealso  \code{\link[=binom.confint]{binom::binom.confint}}, \code{\link{powerSim}}, \code{\link[=powerSimMultiple]{powerSimList}}, \code{\link{powerCurve}}
@@ -106,7 +106,7 @@ print.powerCurve <- function(x, ...) {
   cat("by ", x$xlab, ":\n", sep="")
   for(i in seq_along(x$ps)) {
 
-    cat(sprintf("%7i: ", x$xval[i]))
+    cat(sprintf("%7s: ", x$xval[i]))
     printerval(x$ps[[i]], ...)
     cat(" -", x$ps[[i]]$nrow, "rows")
     cat("\n")
@@ -160,7 +160,7 @@ summary.powerSimList <- function(object, alpha=object$alpha, level=0.95, method=
 summary.powerCurve <- function(object, alpha=object$alpha, level=0.95, method=getSimrOption("binom"), ...) {
 
     rval <- ldply(object$ps, summary, alpha=alpha, level=level, method=method)
-    rval <- cbind(nlevels=object$nlevels, rval)
+    rval <- cbind(nrow=sapply(object$ps, `[[`, "nrow"), nlevels=object$nlevels, rval)
 
     class(rval) <- c("summary.powerCurve", class(rval))
 

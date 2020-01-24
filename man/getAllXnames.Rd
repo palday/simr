@@ -4,8 +4,7 @@
 \alias{getAllXnames}
 \title{Extract all fixed-effect model terms}
 \usage{
-getAllXnames(fit, exclude = c("(Intercept)"), pred.type = c("anova",
-  "coef"))
+getAllXnames(fit, exclude = c("(Intercept)"), pred.type = c("anova", "coef"))
 }
 \arguments{
 \item{fit}{a fitted model from \code{\link{lm}}, \code{\link{glm}},
@@ -27,4 +26,3 @@ Extract all fixed-effect model terms
   \code{pred.type="coef"} returns a name for each contrast in the model. i.e.
   with categorical predictors unexpanded. \code{}
 }
-

@@ -4,9 +4,17 @@
 \alias{powerSimSimultaneous}
 \title{Estimate omnibus power for multiple effects by simulation}
 \usage{
-powerSimSimultaneous(fit, test = fixed, xvars = getAllXnames(fit, exclude =
-  c("(Intercept)"), pred.type = "anova"), sim = fit, fitOpts = list(),
-  testOpts = list(), simOpts = list(), seed, ...)
+powerSimSimultaneous(
+  fit,
+  test = fixed,
+  xvars = getAllXnames(fit, exclude = c("(Intercept)"), pred.type = "anova"),
+  sim = fit,
+  fitOpts = list(),
+  testOpts = list(),
+  simOpts = list(),
+  seed,
+  ...
+)
 }
 \arguments{
 \item{fit}{a fitted model object (see \code{\link{doFit}}).}
@@ -83,6 +91,7 @@ This function differs from \code{\link{powerSim}} primarily in the
   of length 1, i.e. a single name. The reverse may not be true, e.g.
   KR-testing via \code{pbkrtest::KRmodcomp}.
 }
+
 \examples{
 fm1 <- lmer(angle ~ recipe + temp + (1|recipe:replicate), cake, REML= FALSE)
 fm2 <- lm(mpg ~ disp + wt,data=mtcars)
@@ -101,4 +110,3 @@ powerSimMultiple(fm2, function(x) fixed(x,method="t"), getAllXnames(fm2, pred.ty
 \code{\link{powerSim}},\code{\link{powerSimMultiple}}, \code{\link{print.powerSimList}},
   \code{\link{confint.powerSimList}}, \code{\link{summary.powerSimList}}
 }
-

@@ -4,8 +4,16 @@
 \alias{powerSim}
 \title{Estimate power by simulation.}
 \usage{
-powerSim(fit, test = fixed(getDefaultXname(fit)), sim = fit,
-  fitOpts = list(), testOpts = list(), simOpts = list(), seed, ...)
+powerSim(
+  fit,
+  test = fixed(getDefaultXname(fit)),
+  sim = fit,
+  fitOpts = list(),
+  testOpts = list(),
+  simOpts = list(),
+  seed,
+  ...
+)
 }
 \arguments{
 \item{fit}{a fitted model object (see \code{\link{doFit}}).}
@@ -41,4 +49,3 @@ powerSim(fm1, nsim=10)
 \seealso{
 \code{\link{print.powerSim}}, \code{\link{summary.powerSim}}, \code{\link{confint.powerSim}}
 }
-

@@ -7,11 +7,15 @@
 \usage{
 doTest(object, test, ...)
 
-\method{doTest}{default}(object, test = fixed(getDefaultXname(object)),
-  simultaneous = FALSE, ...)
+\method{doTest}{default}(
+  object,
+  test = fixed(getDefaultXname(object)),
+  simultaneous = FALSE,
+  ...
+)
 }
 \arguments{
-\item{object}{an object to apply a statistcal test to, usually a fitted model.}
+\item{object}{an object to apply a statistical test to, usually a fitted model.}
 
 \item{test}{a test function, see \link{tests}.}
 
@@ -25,4 +29,3 @@ a p-value with attributes describing the test.
 \description{
 This is normally an internal function, but it can be overloaded to extend \code{simr} to other packages.
 }
-
