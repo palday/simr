@@ -100,7 +100,9 @@ powerSim <- function(
     rval $ messages <- p$messages
     rval $ warnings <- p$warnings
     rval $ errors <- p$errors
-    #rval $ singular <- ifelse(p$messages)
+
+    rval $ singular <- rep(ifelse(is(fit,"merMod"), FALSE, NA), length(rval$pval))
+    rval $ singular[grep("singular",p$messages[,"message"])] <- TRUE
 
     rval $ timing <- timing
     rval $ simrTag <- observedPowerWarning(sim)

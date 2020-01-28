@@ -143,6 +143,9 @@ powerSimMultiple <- function(
     rval $ warnings <- p$warnings
     rval $ errors <- p$errors
 
+    rval $ singular <- rep(ifelse(is(fit,"merMod"), FALSE, NA), length(rval$pval))
+    rval $ singular[grep("singular",p$messages[,"message"])] <- TRUE
+
     rval $ timing <- timing
     rval $ simrTag <- observedPowerWarning(sim)
 
