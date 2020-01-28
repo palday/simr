@@ -26,6 +26,8 @@ maybe <- function(f) {
     function(...) {
 
         returnValue <- NULL
+        messageValue <- NULL
+        messageTag <- NULL
         warningValue <- NULL
         warningTag <- NULL
         errorValue <- NULL
@@ -34,7 +36,13 @@ maybe <- function(f) {
         returnValue <- tryCatch(
 
             withCallingHandlers(f(...),
+                message=function(m) {
 
+                    messageValue <<- append(messageValue, m$message)
+                    mtag <- if(is.null(m$tag)) "" else m$tag
+                    messageTag <<- append(messageTag, mtag)
+                    invokeRestart("muffleMessage")
+                },
                 warning=function(w) {
 
                     warningValue <<- append(warningValue, w$message)
@@ -55,6 +63,8 @@ maybe <- function(f) {
         class(rval) <- "Maybe"
 
         rval["value"] <- list(returnValue) # nb returnValue might be NULL
+        rval["message"] <- list(messageValue)
+        rval["messagetag"] <- list(messageTag)
         rval["warning"] <- list(warningValue)
         rval["warningtag"] <- list(warningTag)
         rval["error"] <- list(errorValue)
@@ -70,6 +80,7 @@ list2maybe <- function(x) {
 
     rval $ value <- as.list(x)
 
+    rval $ messages <- maybeFrame()
     rval $ warnings <- maybeFrame()
     rval $ errors <- maybeFrame()
 
@@ -113,10 +124,26 @@ maybe_llply <- function(.data, .fun, .text="", ..., .progress=progress_simr(.tex
     rval <- list()
     rval $ value <- llply(z, `[[`, "value")
 
-    # extract warnings and errors from $value?
+    # extract messages, warnings and errors from $value?
     # don't use parallel computation for these simple operations because the overhead is greater than the gain
+    extractMessages <- if(.extract) do.call(rbind, llply(rval$value, `[[`, "messages")) else maybeFrame()
     extractWarnings <- if(.extract) do.call(rbind, llply(rval$value, `[[`, "warnings")) else maybeFrame()
     extractErrors <- if(.extract) do.call(rbind, llply(rval$value, `[[`, "errors")) else maybeFrame()
+
+    # $messages
+    # don't use parallel computation for these simple operations because the overhead is greater than the gain
+    messages <- llply(z, `[[`, "message")
+    wtags <- llply(z, `[[`, "messagetag")
+    index <- rep(seq_along(messages), laply(messages, length))
+    #stage <- rep(.text, length(index))
+    message <- unlist(messages)
+    stage <- unlist(wtags)
+
+    rval $ messages <- rbind(
+        .data$messages,
+        extractMessages,
+        data.frame(stage, index, message, stringsAsFactors=FALSE)
+    )
 
     # $warnings
     # don't use parallel computation for these simple operations because the overhead is greater than the gain
