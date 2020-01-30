@@ -178,7 +178,9 @@ fixeddesc <- function(text, xname) {
 
         # effect size
         fe <- maybe(fixef)(sim)$value
-        if(!is.null(fe) && xname %in% names(fe)) {
+        # this needs to be all() because mixed results aren't handled in
+        # simultaneous testing
+        if(all(!is.null(fe)) && all(xname %in% names(fe))) {
             if(length(xname) == 1){
                 rval[2] <- sprintf("Effect size for %s is %#.2g", xname, fe[[xname]])
             }else{

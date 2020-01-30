@@ -23,11 +23,11 @@ doTest.default <- function(object, test=fixed(getDefaultXname(object)), simultan
 
     pval <- test(object)
 
-    if(!is.numeric(pval) || is.na(pval)) stop("Test did not return a p-value")
+    if(!is.numeric(pval) || length(pval) < 1 || any(is.na(pval))) stop("Test did not return a p-value")
 
-    if(!simultaneous && length(pval)!= 1) stop("Test did not return a p-value")
+    if(!simultaneous && length(pval) != 1) stop("Test did not return a p-value")
 
-    if(is.numeric(simultaneous) && length(pval)!= simultaneous) stop("Test did not return enough p-values")
+    if(is.numeric(simultaneous) && length(pval) != simultaneous) stop("Test did not return enough p-values")
 
     pval_str <- ifelse(simultaneous,"p-values","p-value")
 
