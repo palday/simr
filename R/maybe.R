@@ -4,6 +4,13 @@ tag <- function(thing, tag="") {
 
         withCallingHandlers(eval.parent(thing),
 
+
+            message=function(m) {
+
+                m$tag <- tag
+                message(m)
+                invokeRestart("muffleMessage")
+            },
             warning=function(w) {
 
                 w$tag <- tag
